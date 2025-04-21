@@ -6,7 +6,7 @@ from tkinter import messagebox, ttk
 conn = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="your_password",
+    password="@#ug4qwer%#Q",
     database="student_db"
 )
 cursor = conn.cursor()
@@ -84,41 +84,55 @@ def load_selected(event):
         age_entry.insert(0, values[2])
         grade_entry.insert(0, values[3])
 
-# Tkinter GUI
+# Tkinter GUI Setup
 root = tk.Tk()
 root.title("Student Record Management System")
-root.geometry("600x400")
+root.geometry("800x500")
+
+# Configure grid weights for resizing
+root.grid_rowconfigure(3, weight=1)
+root.grid_columnconfigure(0, weight=1)
+root.grid_columnconfigure(1, weight=1)
+root.grid_columnconfigure(2, weight=1)
 
 # Input Fields
-tk.Label(root, text="Name").grid(row=0, column=0, padx=10, pady=10)
+tk.Label(root, text="Name").grid(row=0, column=0, padx=10, pady=10, sticky='w')
 name_entry = tk.Entry(root)
-name_entry.grid(row=0, column=1)
+name_entry.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
 
-tk.Label(root, text="Age").grid(row=1, column=0, padx=10, pady=10)
+tk.Label(root, text="Age").grid(row=1, column=0, padx=10, pady=10, sticky='w')
 age_entry = tk.Entry(root)
-age_entry.grid(row=1, column=1)
+age_entry.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
 
-tk.Label(root, text="Grade").grid(row=2, column=0, padx=10, pady=10)
+tk.Label(root, text="Grade").grid(row=2, column=0, padx=10, pady=10, sticky='w')
 grade_entry = tk.Entry(root)
-grade_entry.grid(row=2, column=1)
+grade_entry.grid(row=2, column=1, padx=10, pady=10, sticky='ew')
 
 # Buttons
-tk.Button(root, text="Add Student", command=add_student).grid(row=0, column=2, padx=10)
-tk.Button(root, text="Update Student", command=update_student).grid(row=1, column=2, padx=10)
-tk.Button(root, text="Delete Student", command=delete_student).grid(row=2, column=2, padx=10)
+tk.Button(root, text="Add Student", command=add_student).grid(row=0, column=2, padx=10, pady=5, sticky="ew")
+tk.Button(root, text="Update Student", command=update_student).grid(row=1, column=2, padx=10, pady=5, sticky="ew")
+tk.Button(root, text="Delete Student", command=delete_student).grid(row=2, column=2, padx=10, pady=5, sticky="ew")
 
-# Treeview for Records
+# Treeview + Scrollbar
 columns = ('ID', 'Name', 'Age', 'Grade')
 tree = ttk.Treeview(root, columns=columns, show='headings')
 for col in columns:
     tree.heading(col, text=col)
-tree.grid(row=3, column=0, columnspan=3, padx=10, pady=20)
+    tree.column(col, anchor="center")
 
+# Scrollbar
+scrollbar = ttk.Scrollbar(root, orient="vertical", command=tree.yview)
+tree.configure(yscrollcommand=scrollbar.set)
+
+tree.grid(row=3, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
+scrollbar.grid(row=3, column=3, sticky='ns')
+
+# Bind Selection
 tree.bind('<<TreeviewSelect>>', load_selected)
 
-fetch_students()  # Load data on startup
+fetch_students()  # Load data at startup
 
 root.mainloop()
 
-# Close Connection when GUI exits
+# Close Connection after GUI exits
 conn.close()
